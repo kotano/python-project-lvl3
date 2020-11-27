@@ -9,6 +9,7 @@ def main():
     res = download(args.url, args.output)
     if args.x:
         webbrowser.open(res)
+    return res
 
 
 if __name__ == "__main__":
