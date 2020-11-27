@@ -11,6 +11,9 @@ def get_argparser() -> object:
     parser.add_argument(
         '-o', "--output",
         help="set destination path", default=pathlib.Path.cwd(), type=str)
+    parser.add_argument(
+        '-x', help="open with webbrowser after download ends",
+        action="store_true")
     return parser
 
 
