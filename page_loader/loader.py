@@ -32,10 +32,10 @@ def load_images(contents, destination) -> str:
     for tag in soup.find_all('img', recursive=True):
         src = tag['data-src']
         base, ext = splitext(src)
-        dest = Path(destination) / (get_filename_by_url(base) + ext)
+        file_path = Path(destination) / (get_filename_by_url(base) + ext)
         response = requests.get(src)
-        dest.write_bytes(response.content)
-        tag['data-src'] = str(dest)
+        file_path.write_bytes(response.content)
+        tag['data-src'] = (Path(destination.name) / file_path.name).as_posix()
     return str(soup)
 
 
