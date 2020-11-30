@@ -12,7 +12,7 @@ packages = [
 page-loader = "page_loader.scripts.run_page_loader:main"
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.6"
 requests = "^2.25.0"
 beautifulsoup4 = "^4.9.3"
 

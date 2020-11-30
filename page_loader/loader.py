@@ -30,7 +30,7 @@ def download(url, destination=Path.cwd(), localonly=True) -> str:
 def get_filename_by_url(url) -> str:
     parsed = urlparse(url)
     hostname = parsed.hostname if parsed.hostname else ''
-    file_name = (hostname + parsed.path.rstrip('/'))\
+    file_name = "{}/{}".format(hostname.strip('/'), parsed.path.strip('/'))\
         .replace('/', '-')\
         .replace('.', '-')
     return file_name
@@ -57,7 +57,7 @@ def load_resources(url, destination, localonly=True) -> str:
             # If address is relative then add hostname to link
             if not addr.netloc:
                 logger.info("Changing local address {}".format(src))
-                src = "{}/{}".format(dirname(url), addr.path)
+                src = "{}/{}".format(dirname(url), addr.path.strip('/'))
             # Else if `localonly` is set and link is not related to host
             elif localonly and not urlparse(url).hostname in src:
                 logger.info("Skipping side resource {}".format(src))

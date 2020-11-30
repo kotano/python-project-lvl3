@@ -9,3 +9,6 @@ test:
 
 lint:
 	poetry run flake8 gendiff
+
+check: lint
+	pytest -vv --strict
