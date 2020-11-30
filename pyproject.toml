@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "kotano-page-loader"
-version = "0.2.0"
+version = "0.3.0"
 description = ""
 authors = ["kotano <kot4no@gmail.com>"]
 
@@ -9,7 +9,7 @@ packages = [
 ]
 
 [tool.poetry.scripts]
-page-loader = "page_loader.main:main"
+page-loader = "page_loader.scripts.run_page_loader:main"
 
 [tool.poetry.dependencies]
 python = "^3.7"
