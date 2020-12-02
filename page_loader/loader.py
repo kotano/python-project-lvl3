@@ -13,17 +13,17 @@ logger = getLogger(__name__)
 
 
 @log_func
-def download(url, destination=Path.cwd(), localonly=True) -> str:
+def download(url, destination=Path.cwd(), localonly=True) -> list:
     logging.info("Starting download")
     file_name = get_filename_by_url(url)
-    dir_path = Path(destination) / (file_name + "_files")
-    dir_path.mkdir(exist_ok=True)
+    resources_path = Path(destination) / (file_name + "_files")
+    resources_path.mkdir(exist_ok=True)
 
-    contents = load_resources(url, dir_path, localonly=localonly)
+    page_contents = load_resources(url, resources_path, localonly=localonly)
 
     page_path = Path(destination).resolve() / (file_name + '.html')
-    page_path.write_text(contents, 'utf-8')
-    return page_path
+    page_path.write_text(page_contents, 'utf-8')
+    return page_path, resources_path
 
 
 @log_func
@@ -46,31 +46,42 @@ tag_map = {
 # TODO: img tag has two type of sources `src` and `data-src`
 # find way to handle it.
 @log_func
-def load_resources(url, destination, localonly=True) -> str:
+def load_resources(url, local_dir, localonly=True) -> str:
     soup = BeautifulSoup(requests.get(url).text, features='html.parser')
     for tag, attr in tag_map.items():
-        for elem in soup.find_all(tag, recursive=True):
+        for elem in soup.find_all(tag):
             src = elem.get(attr)
             if not src:
                 continue
-            addr = urlparse(src)
-            # If address is relative then add hostname to link
-            if not addr.netloc:
-                logger.info("Changing local address {}".format(src))
-                src = "{}/{}".format(dirname(url), addr.path.strip('/'))
-            # Else if `localonly` is set and link is not related to host
             elif localonly and not urlparse(url).hostname in src:
                 logger.info("Skipping side resource {}".format(src))
                 continue
-            base, ext = splitext(src)
-            file_path = Path(destination) / (get_filename_by_url(base) + ext)
-            try:
-                response = requests.get(src)
-            except Exception:
-                logger.exception("Error occured while loading resource.")
-                continue
-            file_path.write_bytes(response.content)
-            logger.info("Resource {} was saved to {}".format(src, file_path))
-            elem[attr] = (Path(destination.name) / file_path.name).as_posix()
-            logger.info("Chaned link to local address {}".format(elem[attr]))
+            src = normalize_link(src, url)
+            elem[attr] = save_resource(src, local_dir)
     return str(soup)
+
+
+def normalize_link(src, original_link) -> str:
+    res = src
+    parsed_link = urlparse(res)
+    # If address is relative then add hostname to link
+    if not parsed_link.netloc:
+        absolute_path = dirname(original_link)
+        logger.info("Changing local address {}".format(src))
+        res = "{}/{}".format(absolute_path, parsed_link.path.strip('/'))
+    return res
+
+
+def save_resource(src, destination) -> str:
+    base, ext = splitext(src)
+    file_path = Path(destination) / (get_filename_by_url(base) + ext)
+    try:
+        response = requests.get(src)
+    except Exception:
+        logger.exception("Error occured while loading resource.")
+        return src
+    file_path.write_bytes(response.content)
+    logger.info("Resource {} was saved to {}".format(src, file_path))
+    res = (Path(destination.name) / file_path.name).as_posix()
+    logger.info("Chaned link to local address {}".format(res))
+    return res
