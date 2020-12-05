@@ -1,10 +1,12 @@
 import logging
+import shutil
 from os.path import splitext
 from pathlib import Path
 from urllib.parse import urljoin, urlparse
 
 import requests
 from bs4 import BeautifulSoup
+from progress.bar import Bar
 
 from page_loader import logging as lo
 
@@ -13,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 # @log_func
-def download(url, destination=Path.cwd(), localonly=True) -> list:
+def download(url, destination=Path.cwd(), externals=False) -> list:
     logger.info("Starting download")
     file_name = get_filename_by_url(url)
     resources_path = (Path(destination) / (file_name + "_files")).resolve()
@@ -22,7 +24,13 @@ def download(url, destination=Path.cwd(), localonly=True) -> list:
         raise lo.PathAccessError("Directory not found.")
     resources_path.mkdir(exist_ok=True)
 
-    page_contents = load_resources(url, resources_path, localonly=localonly)
+    try:
+        page_contents = load_resources(
+            url, resources_path, externals=externals)
+    except lo.ConnectionError as e:
+        logger.debug("Removing resources directory. %s" % resources_path)
+        shutil.rmtree(resources_path)
+        raise e
 
     page_path = Path(destination).resolve() / (file_name + '.html')
     page_path.write_text(page_contents, 'utf-8')
@@ -50,7 +58,7 @@ tag_map = {
 # TODO: img tag has two type of sources `src` and `data-src`
 # find way to handle it.
 @lo.log_func
-def load_resources(url, local_dir, localonly=True) -> str:
+def load_resources(url, local_dir, externals=False) -> str:
     soup = get_parsed_html(url)
     parsed_url = urlparse(url)
     for tag, attr in tag_map.items():
@@ -60,7 +68,7 @@ def load_resources(url, local_dir, localonly=True) -> str:
                 continue
             elif not urlparse(src).netloc:
                 src = urljoin(url, src.strip('/'))
-            elif localonly and parsed_url.hostname not in src:
+            elif not externals and parsed_url.hostname not in src:
                 logger.debug("Skipping side resource {}".format(src))
                 continue
             elem[attr] = save_resource(src, local_dir)
@@ -68,18 +76,23 @@ def load_resources(url, local_dir, localonly=True) -> str:
 
 
 def save_resource(src, destination) -> str:
+    bar = Bar(src, max=2)
     base, ext = splitext(src)
     file_path = Path(destination) / (get_filename_by_url(base) + ext)
     try:
         response = requests.get(src)
+        bar.next()
         file_path.write_bytes(response.content)
+        bar.next()
     except OSError as e:
         # Skip unsuccessfull download
-        logger.error(
+        bar.finish()
+        logger.warning(
             "Unable to save resource to destination path {}".format(file_path))
         logger.debug(e, exc_info=True)
         return src
-    logger.info("Resource {} was saved to {}".format(src, file_path))
+    bar.finish()
+    logger.debug("Resource {} was saved to {}".format(src, file_path))
     res = (Path(destination.name) / file_path.name).as_posix()
     logger.debug("Chaned link to local address {}".format(res))
     return res

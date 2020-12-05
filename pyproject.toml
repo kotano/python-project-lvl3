@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "kotano-page-loader"
-version = "0.3.0"
+version = "0.4.0"
 description = ""
 authors = ["kotano <kot4no@gmail.com>"]
 
@@ -15,6 +15,7 @@ page-loader = "page_loader.scripts.run_page_loader:main"
 python = "^3.6"
 requests = "^2.25.0"
 beautifulsoup4 = "^4.9.3"
+progress = "^1.5"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^3.8.4"
