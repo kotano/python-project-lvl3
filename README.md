@@ -5,3 +5,7 @@
 [![Test Coverage](https://api.codeclimate.com/v1/badges/2cb4197a93e360c80bce/test_coverage)](https://codeclimate.com/github/kotano/python-project-lvl3/test_coverage)
 
 Page loader allows you to download webpage and its local resources to your local machine.
+
+## Demo
+
+[![asciicast](https://asciinema.org/a/4hEdmevdVAorkd3qm5ieguQ6r.svg)](https://asciinema.org/a/4hEdmevdVAorkd3qm5ieguQ6r)
