@@ -59,7 +59,7 @@ def get_standard_console_handler():
 def get_file_handler():
     dirname = os.path.dirname(LOG_FILE)
     if not os.path.exists(dirname):
-        os.path.makedirs(dirname)
+        os.makedirs(dirname)
     file_handler = RotatingFileHandler(LOG_FILE, 'a', 2**20, 4)
     file_handler.setFormatter(FORMATTER)
     return file_handler

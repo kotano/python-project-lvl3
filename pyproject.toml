@@ -1,8 +1,10 @@
 [tool.poetry]
 name = "kotano-page-loader"
-version = "0.4.0"
-description = ""
+version = "0.4.1"
+description = "Download webpages with related resources."
 authors = ["kotano <kot4no@gmail.com>"]
+readme = "README.md"
+repository = "https://github.com/kotano/python-project-lvl3"
 
 packages = [
     { include = "page_loader" },

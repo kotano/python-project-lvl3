@@ -32,7 +32,7 @@ jobs:
       run: |
         make lint
     - name: Test with pytest and publish code coverage
-      uses: paambaati/codeclimate-action@v2.7.4
+      uses: paambaati/codeclimate-action@v2.2.4
       env:
         CC_TEST_REPORTER_ID: ${{ secrets.COVERAGE_ID }}
       with:

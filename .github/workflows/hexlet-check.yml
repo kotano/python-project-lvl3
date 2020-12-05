@@ -10,9 +10,8 @@ name: hexlet-check
 
 on:
   push:
-    branches:
-#       - '**'
-      - $default-branch
+    branches: [ main ]
+      # - '**'
 
 jobs:
   build:
