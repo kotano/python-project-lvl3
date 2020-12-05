@@ -8,4 +8,7 @@ test:
 	poetry run pytest -vv --strict --cov --cov-report xml
 
 lint:
-	poetry run flake8 gendiff
+	poetry run flake8 page_loader
+
+check: lint
+	pytest -vv --strict
