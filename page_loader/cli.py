@@ -1,7 +1,7 @@
 import argparse
 import pathlib
 
-loglevels = ["DEBUG", "INFO", "WARNING"]
+loglevels = ["DEBUG", "INFO", "WARNING", "ERROR", 'CRITICAL']
 
 
 def get_argparser() -> object:

@@ -1,21 +1,24 @@
-import sys
 import webbrowser
-import logging
 
 from page_loader.cli import parse_args
 from page_loader import download
-from page_loader.logging import configure_logger
+from page_loader import logging
+
+logger = logging.logging.getLogger(__name__)
+devlogger = logging.get_dev_logger(__name__)
 
 
 def main():
     args = parse_args()
-    configure_logger(args.loglevel)
-    res = download(args.url, args.output)
+    logging.configure_logger(args.loglevel)
+    try:
+        res = download(args.url, args.output)
+    except logging.PageLoaderError:
+        exit(1)
     if args.x:
         webbrowser.open(res)
-    logging.debug("Program finished with exit code 0")
     print(res)
-    sys.exit(0)
+    exit(0)
 
 
 if __name__ == "__main__":
