@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "kotano-page-loader"
+name = "hexlet_code"
 version = "0.4.1"
 description = "Download webpages with related resources."
 authors = ["kotano <kot4no@gmail.com>"]
