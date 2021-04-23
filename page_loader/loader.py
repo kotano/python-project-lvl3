@@ -105,5 +105,5 @@ def get_parsed_html(url):
         logger.error(
             "Failed to establish connection with: {}".format(url))
         logger.debug(e, exc_info=True)
-        raise lo.ConnectionError() from e
+        # raise lo.ConnectionError() from e
     return soup
