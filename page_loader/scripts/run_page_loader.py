@@ -10,6 +10,7 @@ logger = logging.logging.getLogger(__name__)
 def main():
     args = parse_args()
     logging.configure_logger(args.loglevel)
+    logger.debug("Program started with arguments: {}".format(args))
     try:
         page, resources = download(args.url, args.output, args.externals)
     except logging.PageLoaderError:
